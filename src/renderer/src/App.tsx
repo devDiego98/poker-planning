@@ -1,15 +1,19 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
 import RevealCardsSection from './components/RevealCardsSection'
+import Voting from './components/Voting'
 
 function App(): JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
-
+  const styles = {
+    layout: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '64px'
+    }
+  }
   return (
-    <>
+    <div style={styles.layout}>
       <RevealCardsSection />
-      <Versions></Versions>
-    </>
+      <Voting />
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import UserCard from './UserCard'
+import Card from './Card'
 
 export default function RevealCardsSection() {
   const [users, setUsers] = useState([
@@ -35,6 +35,7 @@ export default function RevealCardsSection() {
       name: 'cyn'
     }
   ])
+  const [cardsFlipped, setCardsFlipped] = useState(false)
   const [layout, setLayout] = useState({
     top: [],
     bottom: []
@@ -63,7 +64,9 @@ export default function RevealCardsSection() {
     <div className="table-module-container is-user-lonely" style={styles.container}>
       <div className="top" style={styles.top}>
         {layout.top.map((user) => (
-          <UserCard user={user} />
+          <Card user={user} flipped={cardsFlipped} flippable>
+            {user.name}
+          </Card>
         ))}
       </div>
       <div className="table" style={styles.table}>
@@ -77,7 +80,14 @@ export default function RevealCardsSection() {
             >
               <span className="Button-module--content--85ef4 is-clickable">
                 <span className="Button-module--label--e4390 is-clickable">
-                  <span className="label-big-screen">Reveal cards</span>
+                  <span
+                    className="label-big-screen"
+                    onClick={() => {
+                      setCardsFlipped(!cardsFlipped)
+                    }}
+                  >
+                    Reveal cards
+                  </span>
                 </span>
               </span>
             </button>
@@ -86,7 +96,9 @@ export default function RevealCardsSection() {
       </div>
       <div className="bottom" style={styles.bottom}>
         {layout.bottom.map((user) => (
-          <UserCard user={user} nameAlign="bottom" />
+          <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
+            {user.name}
+          </Card>
         ))}
       </div>
     </div>
