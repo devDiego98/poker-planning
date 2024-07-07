@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import Register from './pages/Register'
+import { AuthProvider } from './contexts/authContext'
 function App(): JSX.Element {
 
   // const styles = {
@@ -21,21 +22,24 @@ function App(): JSX.Element {
 
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Dashboard />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Login />} />
+    <AuthProvider>
 
-      </Routes>
-      {/* <div style={styles.layout}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Login />} />
+
+        </Routes>
+        {/* <div style={styles.layout}>
         <div style={styles.header}>
-          asdasd
+        asdasd
         </div>
-      
-
-      </div> */}
-    </BrowserRouter>
+        
+        
+        </div> */}
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

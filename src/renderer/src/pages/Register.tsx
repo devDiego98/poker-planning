@@ -93,7 +93,7 @@ const Register = () => {
                         </button>
                         <div className="text-sm text-center">
                             Already have an account? {'   '}
-                            <Link to={'/login'} className="text-center text-sm hover:underline font-bold">Continue</Link>
+                            <Link to={'/'} className="text-center text-sm hover:underline font-bold">Continue</Link>
                         </div>
                     </form>
                 </div>

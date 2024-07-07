@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@renderer/contexts/authContext'
+import { getAdditionalUserInfo, getRedirectResult } from 'firebase/auth'
+import { auth } from '@renderer/firebase/firebase'
 
 const Login = () => {
     const navigate = useNavigate()
-    // const { userLoggedIn } = useAuth()
+    const { userLoggedIn, setCurrentUser } = useAuth()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -16,21 +19,37 @@ const Login = () => {
         e.preventDefault()
         if (!isSigningIn) {
             setIsSigningIn(true)
-            await doSignInWithEmailAndPassword(email, password)
+            try {
+
+                let res = await doSignInWithEmailAndPassword(email, password)
+                setCurrentUser({
+                    email: res.user.email,
+                    id: res.user.uid,
+                    name: res.user.displayName
+                })
+                navigate('/dashboard')
+                console.log(res)
+            } catch (err) {
+                console.error(err)
+            } finally {
+                setIsSigningIn(false)
+            }
             // doSendEmailVerification()
         }
     }
 
     const onGoogleSignIn = (e) => {
-        console.log(e)
+        console.log('STARTED')
         e.preventDefault()
         if (!isSigningIn) {
             setIsSigningIn(true)
-            doSignInWithGoogle().catch((err) => {
+            let res = doSignInWithGoogle().then(res => { console.log('RES', res) }).catch((err) => {
                 setIsSigningIn(false)
                 console.error(err)
             })
+            console.log(res)
         }
+        console.log('FINISHED')
     }
 
     return (
