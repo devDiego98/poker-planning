@@ -3,11 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <title>Electron</title>
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self';"> -->
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *;**script-src 'self' http://onlineerp.solution.quebec 'unsafe-inline' 'unsafe-eval';** "> -->
+    <!-- <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
-    />
+      content="default-src 'self'; script-src 'self';  "
+    /> -->
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' 'unsafe-inline';">
   </head>
 
   <body>

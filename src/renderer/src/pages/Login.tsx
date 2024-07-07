@@ -22,6 +22,7 @@ const Login = () => {
     }
 
     const onGoogleSignIn = (e) => {
+        console.log(e)
         e.preventDefault()
         if (!isSigningIn) {
             setIsSigningIn(true)

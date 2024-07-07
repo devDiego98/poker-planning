@@ -2,8 +2,8 @@
 import Login from './pages/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
+import Register from './pages/Register'
 function App(): JSX.Element {
-
 
   // const styles = {
   //   layout: {
@@ -24,6 +24,7 @@ function App(): JSX.Element {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Dashboard />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
 
       </Routes>
