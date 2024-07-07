@@ -16,10 +16,10 @@ export default function Card({
   const styles = {
     cardContainer: {
       display: 'flex',
-      flexDirection: nameAlign == 'top' ? 'column' : 'column-reverse'
+      flexDirection: nameAlign == 'top' ? 'column' : 'column-reverse' as 'column' | 'column-reverse'
     },
     name: {
-      textAlign: 'center'
+      textAlign: 'center' as 'center'
     },
     card: {
       width: '50px',

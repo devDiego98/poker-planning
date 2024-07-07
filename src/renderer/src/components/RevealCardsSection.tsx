@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Card from './Card'
 
 export default function RevealCardsSection() {
-  const [users, setUsers] = useState([
+  const [users] = useState([
     {
       name: 'diego',
       id: ''
@@ -37,10 +37,14 @@ export default function RevealCardsSection() {
   ])
   const [cardsFlipped, setCardsFlipped] = useState(false)
   const [layout, setLayout] = useState({
-    top: [],
-    bottom: []
+    top: [{
+      name: ''
+    }],
+    bottom: [{
+      name: ''
+    }]
   })
-  const handleUsersLayout = (users, setUsers) => {
+  const handleUsersLayout = (users) => {
     // Calculate the midpoint
     const midpoint = Math.ceil(users.length / 2)
 
@@ -55,7 +59,7 @@ export default function RevealCardsSection() {
     })
   }
   useEffect(() => {
-    handleUsersLayout(users, setUsers)
+    handleUsersLayout(users)
   }, [users.length])
   useEffect(() => {
     console.log(layout)
@@ -63,11 +67,12 @@ export default function RevealCardsSection() {
   return (
     <div className="table-module-container is-user-lonely" style={styles.container}>
       <div className="top" style={styles.top}>
-        {layout.top.map((user) => (
+        {layout.top.length && layout.top.map((user) => (
           <Card user={user} flipped={cardsFlipped} flippable>
-            {user.name}
+            {user?.name || ''}
           </Card>
         ))}
+
       </div>
       <div className="table" style={styles.table}>
         <div className="table-content" style={styles.tableContent}>
