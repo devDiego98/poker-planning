@@ -32,8 +32,8 @@ export default function RevealCardsSection({ room }) {
     })
   }
   useEffect(() => {
-    console.log('RUNNING AGAIN')
-    handleUsersLayout(room.users || [])
+    console.log('RUNNING AGAIN', room)
+    handleUsersLayout(room?.users || [])
   }, [room])
   useEffect(() => {
     console.log(layout)
