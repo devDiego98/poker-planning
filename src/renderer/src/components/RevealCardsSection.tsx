@@ -1,56 +1,29 @@
 import { useEffect, useState } from 'react'
 import Card from './Card'
 
-export default function RevealCardsSection() {
-  const [users] = useState([
-    {
-      name: 'diego',
-      id: ''
-    },
-    {
-      name: 'dgk'
-    },
-    {
-      name: 'mariana'
-    },
-    {
-      name: 'juli'
-    },
-    {
-      name: 'ippo'
-    },
-    {
-      name: 'leonardo'
-    },
-    {
-      name: 'javi'
-    },
-    {
-      name: 'nati'
-    },
-    {
-      name: 'leonel'
-    },
-    {
-      name: 'cyn'
-    }
-  ])
+export default function RevealCardsSection({ room }) {
   const [cardsFlipped, setCardsFlipped] = useState(false)
   const [layout, setLayout] = useState({
-    top: [{
-      name: ''
-    }],
-    bottom: [{
-      name: ''
-    }]
+    top: [
+      {
+        name: ''
+      }
+    ],
+    bottom: [
+      {
+        name: ''
+      }
+    ]
   })
+
   const handleUsersLayout = (users) => {
     // Calculate the midpoint
+    console.log('USERS', users)
     const midpoint = Math.ceil(users.length / 2)
 
     // Split the array into two halves
-    const firstHalf = users.slice(0, midpoint)
-    const secondHalf = users.slice(midpoint)
+    const firstHalf = Object.values(users)?.slice(0, midpoint)
+    const secondHalf = Object.values(users)?.slice(midpoint)
     console.log(firstHalf, secondHalf)
 
     setLayout({
@@ -59,20 +32,23 @@ export default function RevealCardsSection() {
     })
   }
   useEffect(() => {
-    handleUsersLayout(users)
-  }, [users.length])
+    console.log('RUNNING AGAIN')
+    handleUsersLayout(room.users || [])
+  }, [room])
   useEffect(() => {
     console.log(layout)
   }, [layout.top.length])
   return (
     <div className="table-module-container is-user-lonely" style={styles.container}>
       <div className="top" style={styles.top}>
-        {layout.top.length && layout.top.map((user) => (
-          <Card user={user} flipped={cardsFlipped} flippable>
-            {user?.name || ''}
-          </Card>
-        ))}
-
+        {!!layout.top.length &&
+          layout.top.map((user) => (
+            <>
+              <Card user={user} flipped={cardsFlipped} flippable>
+                {user?.vote || ''}
+              </Card>
+            </>
+          ))}
       </div>
       <div className="table" style={styles.table}>
         <div className="table-content" style={styles.tableContent}>
@@ -102,7 +78,7 @@ export default function RevealCardsSection() {
       <div className="bottom" style={styles.bottom}>
         {layout.bottom.map((user) => (
           <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
-            {user.name}
+            {user.vote}
           </Card>
         ))}
       </div>
