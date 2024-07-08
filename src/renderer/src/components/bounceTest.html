@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +13,13 @@
             overflow: hidden;
             background-color: #f0f0f0;
         }
+
         .ball {
             position: absolute;
             font-size: 24px;
             transform: translate(-50%, -50%);
         }
+
         #target {
             position: absolute;
             width: 50px;
@@ -24,11 +27,13 @@
             background-color: red;
             transform: translate(-50%, -50%);
         }
+
         #launchButton {
             margin: 10px;
         }
     </style>
 </head>
+
 <body>
     <div id="gameArea">
         <div id="target"></div>
@@ -36,106 +41,107 @@
     <button id="launchButton">Launch Ball</button>
 
     <script>
-    const gameArea = document.getElementById('gameArea');
-    const target = document.getElementById('target');
-    const launchButton = document.getElementById('launchButton');
+        const gameArea = document.getElementById('gameArea');
+        const target = document.getElementById('target');
+        const launchButton = document.getElementById('launchButton');
 
-    const GRAVITY = 0.5;
-    const BOUNCE_FACTOR = 0.7;
-    const ANIMATION_DURATION = 800;
-    const MAX_BOUNCES = 4;
-    let targetCoordinates = { x: 0, y: 0 };
-    const targetSize = 50;
+        const GRAVITY = 0.5;
+        const BOUNCE_FACTOR = 0.7;
+        const ANIMATION_DURATION = 800;
+        const MAX_BOUNCES = 4;
+        let targetCoordinates = { x: 0, y: 0 };
+        const targetSize = 50;
 
-    const createTarget = () => {
-        const maxX = gameArea.clientWidth - targetSize;
-        const maxY = gameArea.clientHeight - targetSize;
-        
-        targetCoordinates.x = Math.random() * maxX;
-        targetCoordinates.y = Math.random() * maxY;
-                            
-        target.style.width = `${targetSize}px`;
-        target.style.height = `${targetSize}px`;
-        target.style.left = `${targetCoordinates.x}px`;
-        target.style.top = `${targetCoordinates.y}px`;
-    }
+        const createTarget = () => {
+            const maxX = gameArea.clientWidth - targetSize;
+            const maxY = gameArea.clientHeight - targetSize;
 
-    function positionTarget(startingSide='left') {
-        const endY = (targetCoordinates.y + targetSize / 2) - 25; 
-        const endX = startingSide === "left" ? targetCoordinates.x - 25 - 8 : targetCoordinates.x + 35;
-        return { endX, endY };
-    }
+            targetCoordinates.x = Math.random() * maxX;
+            targetCoordinates.y = Math.random() * maxY;
 
-    function createBall() {
-        const ball = document.createElement('div');
-        ball.className = 'ball';
-        ball.textContent = '🏀';
-        gameArea.appendChild(ball);
-        return ball;
-    }
+            target.style.width = `${targetSize}px`;
+            target.style.height = `${targetSize}px`;
+            target.style.left = `${targetCoordinates.x}px`;
+            target.style.top = `${targetCoordinates.y}px`;
+        }
 
-    function launch() {
-        const ball = createBall();
-        const randomNumber = Math.floor(Math.random() * 10) + 1;
-        const startX = randomNumber >= 5 ? 0 : window.innerWidth;
-        const startY = Math.floor(Math.random() * ((window.innerHeight/2) - 100 + 1)) + 100;
-        const startingSide = randomNumber >= 5 ? 'left' : 'right';
-        const { endX, endY } = positionTarget(startingSide);
+        function positionTarget(startingSide = 'left') {
+            const endY = (targetCoordinates.y + targetSize / 2) - 25;
+            const endX = startingSide === "left" ? targetCoordinates.x - 25 - 8 : targetCoordinates.x + 35;
+            return { endX, endY };
+        }
 
-        let pos = { x: startX, y: startY }; 
-        let vel = { x: 0, y: 0 };
-        let isFalling = false;
-        let bounceCount = 0;
-        const startTime = Date.now();
+        function createBall() {
+            const ball = document.createElement('div');
+            ball.className = 'ball';
+            ball.textContent = '🏀';
+            gameArea.appendChild(ball);
+            return ball;
+        }
 
-        function update() {
-            // const elapsedTime = Date.now() - startTime;
-            // const progress = Math.min(elapsedTime / ANIMATION_DURATION, 1);
+        function launch() {
+            const ball = createBall();
+            const randomNumber = Math.floor(Math.random() * 10) + 1;
+            const startX = randomNumber >= 5 ? 0 : window.innerWidth;
+            const startY = Math.floor(Math.random() * ((window.innerHeight / 2) - 100 + 1)) + 100;
+            const startingSide = randomNumber >= 5 ? 'left' : 'right';
+            const { endX, endY } = positionTarget(startingSide);
 
-            // if (!isFalling) {
-            //     pos.x = startX + (endX - startX) * progress;
-            //     pos.y = startY + (endY - startY) * progress - 100 * Math.sin(Math.PI * progress);
+            let pos = { x: startX, y: startY };
+            let vel = { x: 0, y: 0 };
+            let isFalling = false;
+            let bounceCount = 0;
+            const startTime = Date.now();
 
-            //     if (progress >= 1) {
-            //         isFalling = true;
-            //         vel.x = 0;
-            //         vel.y = 0;
-            //     }
-            // } else {
-            //     vel.y += GRAVITY;
-            //     pos.x += vel.x + (startingSide === "left" ? -1 : 1);
-            //     pos.y += vel.y;
+            function update() {
+                const elapsedTime = Date.now() - startTime;
+                const progress = Math.min(elapsedTime / ANIMATION_DURATION, 1);
 
-            //     if (pos.y > gameArea.clientHeight) {
-            //         pos.y = gameArea.clientHeight;
-            //         vel.y *= -BOUNCE_FACTOR;
-            //         bounceCount++;
+                if (!isFalling) {
+                    pos.x = startX + (endX - startX) * progress;
+                    pos.y = startY + (endY - startY) * progress - 100 * Math.sin(Math.PI * progress);
 
-            //         if (bounceCount >= MAX_BOUNCES || Math.abs(vel.y) < 1) {
-            //             // Ball has finished bouncing
-            //             setTimeout(() => {
-            //                 ball.style.opacity = '0';
-            //                 setTimeout(() => {
-            //                     gameArea.removeChild(ball);
-            //                 }, 1000); // Remove ball after fade out
-            //             }, 2000); // Start fade out after 2 seconds
-            //             return;
-            //         }
-            //     }
-            // }
+                    if (progress >= 1) {
+                        isFalling = true;
+                        vel.x = 0;
+                        vel.y = 0;
+                    }
+                } else {
+                    vel.y += GRAVITY;
+                    pos.x += vel.x + (startingSide === "left" ? -1 : 1);
+                    pos.y += vel.y;
 
-            // ball.style.left = `${pos.x}px`;
-            // ball.style.top = `${pos.y}px`;
+                    if (pos.y > gameArea.clientHeight) {
+                        pos.y = gameArea.clientHeight;
+                        vel.y *= -BOUNCE_FACTOR;
+                        bounceCount++;
+
+                        if (bounceCount >= MAX_BOUNCES || Math.abs(vel.y) < 1) {
+                            // Ball has finished bouncing
+                            setTimeout(() => {
+                                ball.style.opacity = '0';
+                                setTimeout(() => {
+                                    gameArea.removeChild(ball);
+                                }, 1000); // Remove ball after fade out
+                            }, 2000); // Start fade out after 2 seconds
+                            return;
+                        }
+                    }
+                }
+
+                ball.style.left = `${pos.x}px`;
+                ball.style.top = `${pos.y}px`;
+
+                requestAnimationFrame(update);
+            }
 
             requestAnimationFrame(update);
         }
 
-        requestAnimationFrame(update);
-    }
-
-    createTarget();
-    window.addEventListener('resize', createTarget);
-    launchButton.addEventListener('click', launch);
+        createTarget();
+        window.addEventListener('resize', createTarget);
+        launchButton.addEventListener('click', launch);
     </script>
 </body>
+
 </html>
