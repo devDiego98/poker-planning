@@ -3,8 +3,10 @@ import Card from './Card'
 import { off, onValue, ref, update } from 'firebase/database'
 import { db } from '@renderer/firebase/firebase'
 import { useParams } from 'react-router-dom'
+import { useBallThrow } from '@renderer/hooks/useBallThrow'
 
 export default function RevealCardsSection({ room }) {
+  const { balls, throwBallAtElement } = useBallThrow();
   const [cardsFlipped, setCardsFlipped] = useState(false)
   const { roomId } = useParams()
   const [layout, setLayout] = useState({
@@ -75,48 +77,68 @@ export default function RevealCardsSection({ room }) {
 
   }, [])
   return (
-    <div className="table-module-container is-user-lonely" style={styles.container}>
-      <div className="top" style={styles.top}>
-        {!!layout.top.length &&
-          layout.top.map((user) => (
-            <>
-              <Card user={user} flipped={cardsFlipped} flippable>
-                {user?.vote || ''}
-              </Card>
-            </>
-          ))}
-      </div>
-      <div className="table" style={styles.table}>
-        <div className="table-content" style={styles.tableContent}>
-          <div className="show-cards-wrapper" style={styles.showCardsWrapper}>
-            <button
-              className="reveal-cards-button Button-module--button--1b645 Button-module--style-primary--eec70 Button-module--color-primary--bb7ea is-clickable"
-              type="button"
-              data-test="reveal-cards-button"
-              style={styles.revealCardsButton}
-            >
-              <span className="Button-module--content--85ef4 is-clickable">
-                <span className="Button-module--label--e4390 is-clickable">
-                  <span
-                    className="label-big-screen"
-                    onClick={() => {
-                      reveal()
-                    }}
-                  >
-                    Reveal cards
+    <div className='flex flex-1 m-auto items-center'>
+      {balls.map(ball => (
+        <div
+          key={ball.id}
+          style={{
+            position: 'absolute',
+            left: ball.x,
+            top: ball.y,
+            transform: 'translate(-50%, -50%)',
+            fontSize: '24px',
+          }}
+        >
+          🏀
+        </div>
+      ))}
+
+      <div className="table-module-container is-user-lonely" style={styles.container}>
+        <div className="top" style={styles.top}>
+          {!!layout.top.length &&
+            layout.top.map((user) => (
+              <button onClick={throwBallAtElement}>
+                <Card user={user} flipped={cardsFlipped} flippable>
+                  {user?.vote || ''}
+                </Card>
+              </button>
+            ))}
+        </div>
+        <div className="table" style={styles.table}>
+          <div className="table-content" style={styles.tableContent}>
+            <div className="show-cards-wrapper" style={styles.showCardsWrapper}>
+              <button
+                className="reveal-cards-button Button-module--button--1b645 Button-module--style-primary--eec70 Button-module--color-primary--bb7ea is-clickable"
+                type="button"
+                data-test="reveal-cards-button"
+                style={styles.revealCardsButton}
+              >
+                <span className="Button-module--content--85ef4 is-clickable">
+                  <span className="Button-module--label--e4390 is-clickable">
+                    <span
+                      className="label-big-screen"
+                      onClick={() => {
+                        reveal()
+                      }}
+                    >
+                      Reveal cards
+                    </span>
                   </span>
                 </span>
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="bottom" style={styles.bottom}>
-        {layout.bottom.map((user) => (
-          <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
-            {user.vote}
-          </Card>
-        ))}
+        <div className="bottom" style={styles.bottom}>
+          {layout.bottom.map((user) => (
+            <button onClick={throwBallAtElement}>
+
+              <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
+                {user.vote}
+              </Card>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )

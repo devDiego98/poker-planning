@@ -82,50 +82,50 @@
         const startingSide = randomNumber >= 5 ? 'left' : 'right';
         const { endX, endY } = positionTarget(startingSide);
 
-        let pos = { x: startX, y: startY };
+        let pos = { x: startX, y: startY }; 
         let vel = { x: 0, y: 0 };
         let isFalling = false;
         let bounceCount = 0;
         const startTime = Date.now();
 
         function update() {
-            const elapsedTime = Date.now() - startTime;
-            const progress = Math.min(elapsedTime / ANIMATION_DURATION, 1);
+            // const elapsedTime = Date.now() - startTime;
+            // const progress = Math.min(elapsedTime / ANIMATION_DURATION, 1);
 
-            if (!isFalling) {
-                pos.x = startX + (endX - startX) * progress;
-                pos.y = startY + (endY - startY) * progress - 100 * Math.sin(Math.PI * progress);
+            // if (!isFalling) {
+            //     pos.x = startX + (endX - startX) * progress;
+            //     pos.y = startY + (endY - startY) * progress - 100 * Math.sin(Math.PI * progress);
 
-                if (progress >= 1) {
-                    isFalling = true;
-                    vel.x = 0;
-                    vel.y = 0;
-                }
-            } else {
-                vel.y += GRAVITY;
-                pos.x += vel.x + (startingSide === "left" ? -1 : 1);
-                pos.y += vel.y;
+            //     if (progress >= 1) {
+            //         isFalling = true;
+            //         vel.x = 0;
+            //         vel.y = 0;
+            //     }
+            // } else {
+            //     vel.y += GRAVITY;
+            //     pos.x += vel.x + (startingSide === "left" ? -1 : 1);
+            //     pos.y += vel.y;
 
-                if (pos.y > gameArea.clientHeight) {
-                    pos.y = gameArea.clientHeight;
-                    vel.y *= -BOUNCE_FACTOR;
-                    bounceCount++;
+            //     if (pos.y > gameArea.clientHeight) {
+            //         pos.y = gameArea.clientHeight;
+            //         vel.y *= -BOUNCE_FACTOR;
+            //         bounceCount++;
 
-                    if (bounceCount >= MAX_BOUNCES || Math.abs(vel.y) < 1) {
-                        // Ball has finished bouncing
-                        setTimeout(() => {
-                            ball.style.opacity = '0';
-                            setTimeout(() => {
-                                gameArea.removeChild(ball);
-                            }, 1000); // Remove ball after fade out
-                        }, 2000); // Start fade out after 2 seconds
-                        return;
-                    }
-                }
-            }
+            //         if (bounceCount >= MAX_BOUNCES || Math.abs(vel.y) < 1) {
+            //             // Ball has finished bouncing
+            //             setTimeout(() => {
+            //                 ball.style.opacity = '0';
+            //                 setTimeout(() => {
+            //                     gameArea.removeChild(ball);
+            //                 }, 1000); // Remove ball after fade out
+            //             }, 2000); // Start fade out after 2 seconds
+            //             return;
+            //         }
+            //     }
+            // }
 
-            ball.style.left = `${pos.x}px`;
-            ball.style.top = `${pos.y}px`;
+            // ball.style.left = `${pos.x}px`;
+            // ball.style.top = `${pos.y}px`;
 
             requestAnimationFrame(update);
         }
