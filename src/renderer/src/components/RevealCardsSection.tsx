@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import Card from './Card'
+import { off, onValue, ref, update } from 'firebase/database'
+import { db } from '@renderer/firebase/firebase'
+import { useParams } from 'react-router-dom'
 
 export default function RevealCardsSection({ room }) {
   const [cardsFlipped, setCardsFlipped] = useState(false)
+  const { roomId } = useParams()
   const [layout, setLayout] = useState({
     top: [
       {
@@ -38,6 +42,38 @@ export default function RevealCardsSection({ room }) {
   useEffect(() => {
     console.log(layout)
   }, [layout.top.length])
+  const reveal = () => {
+    const userRef = ref(db, `rooms/${roomId}`)
+    update(userRef, {
+      revealCards: true
+    })
+      .catch((error) => {
+        console.error('Error updating card reveal: ', error)
+      })
+
+  }
+  useEffect(() => {
+
+    const roomRef = ref(db, `rooms/${roomId}/revealCards`)
+
+    const unsubscribe = onValue(
+      roomRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setCardsFlipped(snapshot.val())
+        } else {
+          console.log('No user data available')
+        }
+      },
+      (error) => {
+        console.error('Error fetching user data:', error)
+      }
+    )
+
+    // Cleanup function to unsubscribe when component unmounts
+    return () => off(roomRef, 'value', unsubscribe)
+
+  }, [])
   return (
     <div className="table-module-container is-user-lonely" style={styles.container}>
       <div className="top" style={styles.top}>
@@ -64,7 +100,7 @@ export default function RevealCardsSection({ room }) {
                   <span
                     className="label-big-screen"
                     onClick={() => {
-                      setCardsFlipped(!cardsFlipped)
+                      reveal()
                     }}
                   >
                     Reveal cards
