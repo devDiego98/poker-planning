@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import { useBallThrow } from '@renderer/hooks/useBallThrow'
 
 export default function RevealCardsSection({ room }) {
-  const { balls, throwBallAtElement } = useBallThrow();
+  const { balls, throwBallAtElement } = useBallThrow(200)
   const [cardsFlipped, setCardsFlipped] = useState(false)
   const { roomId } = useParams()
   const [layout, setLayout] = useState({
@@ -48,14 +48,19 @@ export default function RevealCardsSection({ room }) {
     const userRef = ref(db, `rooms/${roomId}`)
     update(userRef, {
       revealCards: true
+    }).catch((error) => {
+      console.error('Error updating card reveal: ', error)
     })
-      .catch((error) => {
-        console.error('Error updating card reveal: ', error)
-      })
-
+  }
+  const hideCards = () => {
+    const userRef = ref(db, `rooms/${roomId}`)
+    update(userRef, {
+      revealCards: false
+    }).catch((error) => {
+      console.error('Error updating card reveal: ', error)
+    })
   }
   useEffect(() => {
-
     const roomRef = ref(db, `rooms/${roomId}/revealCards`)
 
     const unsubscribe = onValue(
@@ -74,24 +79,25 @@ export default function RevealCardsSection({ room }) {
 
     // Cleanup function to unsubscribe when component unmounts
     return () => off(roomRef, 'value', unsubscribe)
-
   }, [])
   return (
-    <div className='flex flex-1 m-auto items-center'>
-      {balls.map(ball => (
-        <div
-          key={ball.id}
-          style={{
-            position: 'absolute',
-            left: ball.x,
-            top: ball.y,
-            transform: 'translate(-50%, -50%)',
-            fontSize: '24px',
-          }}
-        >
-          🏀
-        </div>
-      ))}
+    <div className="flex flex-1 m-auto items-center">
+      <div>
+        {balls.map((ball) => (
+          <div
+            key={ball.id}
+            style={{
+              position: 'absolute',
+              left: ball.x - 10, // Centering the ball
+              top: ball.y - 10, // Centering the ball
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              background: 'blue'
+            }}
+          />
+        ))}
+      </div>
 
       <div className="table-module-container is-user-lonely" style={styles.container}>
         <div className="top" style={styles.top}>
@@ -118,10 +124,10 @@ export default function RevealCardsSection({ room }) {
                     <span
                       className="label-big-screen"
                       onClick={() => {
-                        reveal()
+                        cardsFlipped ? hideCards() : reveal()
                       }}
                     >
-                      Reveal cards
+                      {cardsFlipped ? 'New Game' : 'Reveal Cards'}
                     </span>
                   </span>
                 </span>
@@ -132,7 +138,6 @@ export default function RevealCardsSection({ room }) {
         <div className="bottom" style={styles.bottom}>
           {layout.bottom.map((user) => (
             <button onClick={throwBallAtElement}>
-
               <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
                 {user.vote}
               </Card>
