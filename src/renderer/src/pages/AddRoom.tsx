@@ -8,7 +8,7 @@ const AddRoomForm = () => {
   const navigate = useNavigate()
   const [roomName, setRoomName] = useState('')
   const [roomId, setRoomId] = useState('')
-  const { currentUser } = useAuth()
+  const { currentUser }: any = useAuth()
   const handleRoomNameChange = (event) => {
     setRoomName(event.target.value)
   }
@@ -78,8 +78,7 @@ const AddRoomForm = () => {
       users: userObject,
       revealedCards: false
     })
-      .then((res) => {
-        console.log(newRoomRef)
+      .then(() => {
         console.log('Room added successfully')
         setRoomName('')
         let url = `/rooms/${newRoomRef.key}`
@@ -92,36 +91,43 @@ const AddRoomForm = () => {
   }
   return (
     <div>
-      <h2>Add New Room</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <label>
-          Room Name:
+      <div>
+        <h2>Add New Room</h2>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className="flex gap-4">
+            <label htmlFor="create-room-name">Room Name:</label>
+            <input
+              id="create-room-name"
+              placeholder="example room name"
+              type="text"
+              className="text-black pl-2"
+              value={roomName}
+              onChange={handleRoomNameChange}
+            />
+          </div>
+
+          <button type="button" className="text-white" onClick={handleAddRoom}>
+            Add Room
+          </button>
+        </form>
+      </div>
+      <div className="flex gap-2 mt-8">
+        <h4>Already have a room?</h4>
+        <form onSubmit={(e) => e.preventDefault()} className="flex gap-4">
           <input
+            placeholder="room id"
             type="text"
-            className="text-black"
-            value={roomName}
-            onChange={handleRoomNameChange}
+            className="text-black pl-2 max-w-[10px]"
+            style={{ maxWidth: '150px' }}
+            value={roomId}
+            onChange={handleRoomIdChange}
           />
-        </label>
-        <br />
 
-        <button type="button" className="text-white" onClick={handleAddRoom}>
-          Add Room
-        </button>
-      </form>
-
-      <h2>Enter Room</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <label>
-          Room id:
-          <input type="text" className="text-black" value={roomId} onChange={handleRoomIdChange} />
-        </label>
-        <br />
-
-        <button type="button" className="text-white" onClick={goToRoom}>
-          Enter Room
-        </button>
-      </form>
+          <button type="button" className="text-white" onClick={goToRoom}>
+            Enter
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

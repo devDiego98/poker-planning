@@ -4,14 +4,12 @@ import { ref, update } from 'firebase/database'
 import { db } from '@renderer/firebase/firebase'
 import { useAuth } from '@renderer/contexts/authContext'
 
-export default function Voting({ room }) {
+export default function Voting() {
   const { roomId } = useParams()
-  const { currentUser } = useAuth()
+  const { currentUser }: any = useAuth()
   const fibonacciSequence = ['1', '2', '3', '5', '8', '13', '21', '34', '55', '☕']
   function updateUserVote(newVote) {
-    console.log(currentUser)
     const userRef = ref(db, `rooms/${roomId}/users/${currentUser?.id || currentUser?.uid}`)
-    console.log(userRef)
     update(userRef, {
       vote: newVote
     })
@@ -26,6 +24,7 @@ export default function Voting({ room }) {
     <div style={styles.container}>
       {fibonacciSequence.map((item) => (
         <button
+          key={item}
           onClick={() => {
             updateUserVote(item)
           }}

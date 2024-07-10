@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@renderer/contexts/authContext'
-import { getAdditionalUserInfo, getRedirectResult } from 'firebase/auth'
-import { auth } from '@renderer/firebase/firebase'
 
 const Login = () => {
   const navigate = useNavigate()
-  const { userLoggedIn, setCurrentUser } = useAuth()
+  const { setCurrentUser }: any = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

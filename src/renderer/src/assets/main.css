@@ -170,3 +170,10 @@ code {
     display: none;
   }
 }
+
+.card-container .card-emoji-picker {
+  opacity: 0;
+}
+.card-container:hover .card-emoji-picker {
+  opacity: 1;
+}

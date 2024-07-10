@@ -27,9 +27,12 @@
     "@electron-toolkit/utils": "^3.0.0",
     "electron-router-dom": "^1.0.5",
     "electron-updater": "^6.1.7",
+    "emoji-picker-react": "^4.11.1",
     "firebase": "^10.9.0",
     "react-card-flip": "^1.2.3",
-    "react-router-dom": "^6.24.1"
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.24.1",
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
