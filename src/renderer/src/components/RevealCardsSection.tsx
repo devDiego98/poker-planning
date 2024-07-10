@@ -16,14 +16,14 @@ export default function RevealCardsSection({ room }) {
     top: [
       {
         name: '',
-        id: undefined,
+        uid: undefined,
         vote: 0
       }
     ],
     bottom: [
       {
         name: '',
-        id: undefined,
+        uid: undefined,
         vote: 0
       }
     ]
@@ -174,10 +174,10 @@ export default function RevealCardsSection({ room }) {
         <div className="top" style={styles.top}>
           {!!layout.top.length &&
             layout.top.map((user) => (
-              <div id={user.id} key={user.id}>
+              <div id={user.uid} key={user.uid}>
                 <div style={{ display: 'flex' }}>
                   <div
-                    onClick={() => storeEmojiToThrow(user?.id || '', emojiOne)}
+                    onClick={() => storeEmojiToThrow(user?.uid || '', emojiOne)}
                     style={{
                       width: 50,
                       height: 50,
@@ -191,7 +191,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiOne}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id || '', emojiTwo)}
+                    onClick={() => storeEmojiToThrow(user.uid || '', emojiTwo)}
                     style={{
                       width: 50,
                       height: 50,
@@ -205,7 +205,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiTwo}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id || '', emojiThree)}
+                    onClick={() => storeEmojiToThrow(user.uid || '', emojiThree)}
                     style={{
                       width: 50,
                       height: 50,
@@ -253,7 +253,7 @@ export default function RevealCardsSection({ room }) {
         <div className="bottom" style={styles.bottom}>
           {layout.bottom.map((user) => (
             <>
-              <div id={user.id} key={user.id} className="card-container">
+              <div id={user.uid} key={user.uid} className="card-container">
                 <div
                   className="card-emoji-picker"
                   style={{
@@ -263,7 +263,7 @@ export default function RevealCardsSection({ room }) {
                   }}
                 >
                   <div
-                    onClick={() => storeEmojiToThrow(user?.id || '', emojiOne)}
+                    onClick={() => storeEmojiToThrow(user?.uid || '', emojiOne)}
                     style={{
                       width: 50,
                       height: 50,
@@ -277,7 +277,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiOne}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id || '', emojiTwo)}
+                    onClick={() => storeEmojiToThrow(user.uid || '', emojiTwo)}
                     style={{
                       width: 50,
                       height: 50,
@@ -291,7 +291,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiTwo}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id || '', emojiThree)}
+                    onClick={() => storeEmojiToThrow(user.uid || '', emojiThree)}
                     style={{
                       width: 50,
                       height: 50,
