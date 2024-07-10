@@ -1,12 +1,12 @@
-// import RevealCardsSection from '@renderer/components/RevealCardsSection'
-// import Voting from '@renderer/components/Voting'
+import RevealCardsSection from '@renderer/components/RevealCardsSection'
+import Voting from '@renderer/components/Voting'
 import { useAuth } from '@renderer/contexts/authContext'
 import { db } from '@renderer/firebase/firebase'
 import { get, off, onValue, ref, set } from 'firebase/database'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-// import Modal from 'react-modal'
-// import PPEmojiPicker from '@renderer/components/EmojiPicker'
+import Modal from 'react-modal'
+import PPEmojiPicker from '@renderer/components/EmojiPicker'
 export default function Planning() {
   const { roomId } = useParams()
   const { currentUser }: any = useAuth()
@@ -16,12 +16,11 @@ export default function Planning() {
     setIsOpen(true)
   }
 
-  // function closeModal() {
-  //   setIsOpen(false)
-  // }
+  function closeModal() {
+    setIsOpen(false)
+  }
   useEffect(() => {
     console.log(window.location.href)
-    console.log(modalIsOpen, room)
   })
   useEffect(() => {
     if (currentUser) {
@@ -69,10 +68,10 @@ export default function Planning() {
           const usersRef = ref(db, `rooms/${roomId}/users`)
 
           // Check if the user already exists in the room
-          if (!roomData.users || !roomData.users[currentUser.uid]) {
+          if (!roomData.users || !roomData.users[currentUser.id]) {
             // User doesn't exist, so add them
             const userObject = {
-              [currentUser.uid]: {
+              [currentUser.id]: {
                 ...currentUser,
                 vote: 0
               }
@@ -102,11 +101,11 @@ export default function Planning() {
       <header>
         <button onClick={openModal}>Pick Emojis</button>
       </header>
-      {/* <RevealCardsSection key={room} room={room} />
+      <RevealCardsSection key={room} room={room} />
       <Voting />
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Example Modal">
         <PPEmojiPicker />{' '}
-      </Modal> */}
+      </Modal>
     </>
   )
 }

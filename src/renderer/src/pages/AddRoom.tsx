@@ -17,7 +17,7 @@ const AddRoomForm = () => {
   }
 
   const goToRoom = () => {
-    navigate(`rooms/${roomId}`)
+    navigate(`/rooms/${roomId}`)
   }
   const handleAddRoom = useCallback(() => {
     const roomsRef = ref(db, 'rooms')
