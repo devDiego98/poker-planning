@@ -9,7 +9,7 @@ export function useBallThrow(floorOffset = 400) {
   const MAX_BOUNCES = 3
   const BALL_SIZE = 20
 
-  const createBall = useCallback((startX, startY, targetX, targetY, side, floor) => {
+  const createBall = useCallback((startX, startY, targetX, targetY, side, floor, emojis) => {
     const id = Date.now()
     return {
       id,
@@ -19,16 +19,17 @@ export function useBallThrow(floorOffset = 400) {
       targetY,
       side,
       floor,
+      emojis,
       throwStartTime: Date.now(),
       hasHitTarget: false,
       vel: { x: 0, y: 0 },
-      bounceCount: 0
+      bounceCount: 0,
+      rotation: 0 // Add rotation property
     }
   }, [])
 
   const throwBallAtElement = useCallback(
-    (rect) => {
-      console.log(rect)
+    (rect, emojis) => {
       const side = Math.random() < 0.5 ? 'left' : 'right'
       const targetX = rect.left + rect.width / 2 + (side === 'left' ? -35 : 35)
       const targetY = rect.top + rect.height / 2
@@ -37,7 +38,7 @@ export function useBallThrow(floorOffset = 400) {
 
       const floor = targetY + floorOffset
 
-      const newBall = createBall(startX, startY, targetX, targetY, side, floor)
+      const newBall = createBall(startX, startY, targetX, targetY, side, floor, emojis)
       setBalls((prevBalls) => [...prevBalls, newBall])
     },
     [createBall, floorOffset]
@@ -72,7 +73,7 @@ export function useBallThrow(floorOffset = 400) {
               ball.vel.y += GRAVITY
               ball.x += ball.vel.x
               ball.y += ball.vel.y
-
+              ball.rotation += 1
               if (ball.y > ball.floor - BALL_SIZE) {
                 ball.y = ball.floor - BALL_SIZE
                 ball.vel.y *= -BOUNCE_FACTOR

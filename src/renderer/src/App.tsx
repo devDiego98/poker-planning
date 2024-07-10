@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { db } from './firebase/firebase'
 import AddRoomForm from './pages/AddRoom'
 import Planning from './pages/Planning'
+import { AppProvider } from './contexts/authContext/appContext'
 function App(): JSX.Element {
   const [data, setData] = useState(null)
   // const styles = {
@@ -40,23 +41,25 @@ function App(): JSX.Element {
   }, [])
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/rooms/:roomId" element={<Planning />} />
-          <Route path="/add-room" element={<AddRoomForm />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Login />} />
-        </Routes>
-        {/* <div style={styles.layout}>
+    <AppProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/rooms/:roomId" element={<Planning />} />
+            <Route path="/add-room" element={<AddRoomForm />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Login />} />
+          </Routes>
+          {/* <div style={styles.layout}>
         <div style={styles.header}>
         asdasd
         </div>
         
         
         </div> */}
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </AppProvider>
   )
 }
 

@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Card from './Card'
 import { get, off, onChildChanged, onValue, push, ref, set, update } from 'firebase/database'
 import { db } from '@renderer/firebase/firebase'
 import { useParams } from 'react-router-dom'
 import { useBallThrow } from '@renderer/hooks/useBallThrow'
+import { AppContext } from '@renderer/contexts/authContext/appContext'
 
 export default function RevealCardsSection({ room }) {
+  const { emojiOne, emojiTwo, emojiThree } = useContext(AppContext)
+
   const { balls, throwBallAtElement } = useBallThrow(200)
   const [cardsFlipped, setCardsFlipped] = useState(false)
   const { roomId } = useParams()
@@ -52,7 +55,9 @@ export default function RevealCardsSection({ room }) {
   }
   const hideCards = () => {
     const userRef = ref(db, `rooms/${roomId}`)
-    update(userRef, {}).catch((error) => {
+    update(userRef, {
+      revealCards: false
+    }).catch((error) => {
       console.error('Error updating card reveal: ', error)
     })
   }
@@ -63,7 +68,6 @@ export default function RevealCardsSection({ room }) {
       const snapshot = await get(userEmojisRef)
       let currentEmojis = snapshot.val() || []
       if (!Array.isArray(currentEmojis)) {
-        console.log('entered')
         currentEmojis = Object.values(currentEmojis)
           .map((item) => (item as any).code)
           .filter(Boolean)
@@ -71,14 +75,9 @@ export default function RevealCardsSection({ room }) {
       if (newEmoji) {
         currentEmojis.push(newEmoji)
       }
-
-      // Filter out any undefined or null values
       const validEmojis = currentEmojis.filter(Boolean)
-
-      // Set the updated array back to Firebase
       await set(userEmojisRef, validEmojis)
-
-      console.log('Emoji stored successfully')
+      await set(userEmojisRef, [])
     } catch (error) {
       console.error('Error storing emoji:', error)
     }
@@ -107,16 +106,15 @@ export default function RevealCardsSection({ room }) {
 
     const handleEmojiChange = (snapshot: any) => {
       const userData = snapshot.val()
+
       if (userData && userData.emojis) {
         const userId = snapshot.key
         const emojisArray = Object.values(userData.emojis) as []
-
+        console.log(userData)
         // Call your function here with the updated emojis array
         handleUpdatedEmojis(userId, emojisArray)
       }
     }
-
-    // Set up the listener
     onChildChanged(usersRef, handleEmojiChange)
 
     // Return a function to remove the listener when no longer needed
@@ -126,14 +124,9 @@ export default function RevealCardsSection({ room }) {
     const unsubscribe = watchUserEmojis()
     return () => unsubscribe() // Clean up on unmount
   }, [])
-  // The function to handle updated emojis
   const handleUpdatedEmojis = (userId: string, emojis: string[]) => {
-    console.log(`User ${userId} emojis updated:`, emojis)
     const rect = document.getElementById(userId)?.getBoundingClientRect()
-    console.log(userId)
-    console.log(document.getElementById(userId))
-    throwBallAtElement(rect)
-    // Add your logic here to handle the updated emojis
+    throwBallAtElement(rect, emojis)
   }
   useEffect(() => {
     const roomRef = ref(db, `rooms/${roomId}/revealCards`)
@@ -167,10 +160,13 @@ export default function RevealCardsSection({ room }) {
               top: ball.y - 10, // Centering the ball
               width: 20,
               height: 20,
+              fontSize: 48,
               borderRadius: '50%',
-              background: 'blue'
+              transform: `rotate(${ball.rotation}deg)`
             }}
-          />
+          >
+            {ball.emojis[ball.emojis.length - 1]}
+          </div>
         ))}
       </div>
 
@@ -178,11 +174,55 @@ export default function RevealCardsSection({ room }) {
         <div className="top" style={styles.top}>
           {!!layout.top.length &&
             layout.top.map((user) => (
-              <button id={user.id} onClick={() => storeEmojiToThrow(user.id, '☕')}>
+              <div id={user.id} key={user.id}>
+                <div style={{ display: 'flex' }}>
+                  <div
+                    onClick={() => storeEmojiToThrow(user.id, emojiOne)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      border: `1px solid black`,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {emojiOne}
+                  </div>
+                  <div
+                    onClick={() => storeEmojiToThrow(user.id, emojiTwo)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      border: `1px solid black`,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {emojiTwo}
+                  </div>
+                  <div
+                    onClick={() => storeEmojiToThrow(user.id, emojiThree)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      border: `1px solid black`,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {emojiThree}
+                  </div>
+                </div>
                 <Card user={user} flipped={cardsFlipped} flippable>
                   {user?.vote || ''}
                 </Card>
-              </button>
+              </div>
             ))}
         </div>
         <div className="table" style={styles.table}>
@@ -212,11 +252,64 @@ export default function RevealCardsSection({ room }) {
         </div>
         <div className="bottom" style={styles.bottom}>
           {layout.bottom.map((user) => (
-            <button id={user.id} onClick={() => storeEmojiToThrow(user.id, '☕')}>
-              <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
-                {user.vote}
-              </Card>
-            </button>
+            <>
+              <div id={user.id} key={user.id} className="card-container">
+                <div
+                  className="card-emoji-picker"
+                  style={{
+                    display: 'flex',
+                    gap: '8px',
+                    paddingBottom: '16px'
+                  }}
+                >
+                  <div
+                    onClick={() => storeEmojiToThrow(user.id, emojiOne)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      border: `1px solid black`,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {emojiOne}
+                  </div>
+                  <div
+                    onClick={() => storeEmojiToThrow(user.id, emojiTwo)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      border: `1px solid black`,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {emojiTwo}
+                  </div>
+                  <div
+                    onClick={() => storeEmojiToThrow(user.id, emojiThree)}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      border: `1px solid black`,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    {emojiThree}
+                  </div>
+                </div>
+                <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
+                  {user.vote}
+                </Card>
+              </div>
+            </>
           ))}
         </div>
       </div>
