@@ -36,7 +36,6 @@ export default function RevealCardsSection({ room }) {
     // Split the array into two halves
     const firstHalf = Object.values(users)?.slice(0, midpoint)
     const secondHalf = Object.values(users)?.slice(midpoint)
-    console.log(firstHalf, secondHalf)
 
     setLayout({
       top: [...(firstHalf as [])],
@@ -46,9 +45,7 @@ export default function RevealCardsSection({ room }) {
   useEffect(() => {
     handleUsersLayout(room?.users || [])
   }, [room])
-  useEffect(() => {
-    console.log(layout)
-  }, [layout.top.length])
+
   const reveal = () => {
     const userRef = ref(db, `rooms/${roomId}`)
     update(userRef, {
@@ -114,7 +111,6 @@ export default function RevealCardsSection({ room }) {
       if (userData && userData.emojis) {
         const userId = snapshot.key
         const emojisArray = Object.values(userData.emojis) as []
-        console.log(userData)
         // Call your function here with the updated emojis array
         handleUpdatedEmojis(userId, emojisArray)
       }

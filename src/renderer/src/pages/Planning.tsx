@@ -20,6 +20,9 @@ export default function Planning() {
     setIsOpen(false)
   }
   useEffect(() => {
+    console.log(window.location.href)
+  })
+  useEffect(() => {
     if (currentUser) {
       const roomRef = ref(db, `rooms/${roomId}`)
 
@@ -40,8 +43,23 @@ export default function Planning() {
     }
     return
   }, [currentUser])
+  const copyLinkToClipboard = () => {
+    const url = window.location.href
+
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        console.log('Page URL copied to clipboard:', url)
+        // Optionally, you can show a success message or perform other actions here
+      })
+      .catch((err) => {
+        console.error('Failed to copy:', err)
+        // Handle errors here
+      })
+  }
   return (
     <>
+      <button onClick={copyLinkToClipboard}>Copy Link</button>
       <header>
         <button onClick={openModal}>Pick Emojis</button>
       </header>

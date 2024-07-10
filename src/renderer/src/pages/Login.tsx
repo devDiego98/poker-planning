@@ -25,7 +25,6 @@ const Login = () => {
           name: res.user.displayName
         })
         navigate('/add-room')
-        console.log(res)
       } catch (err) {
         console.error(err)
       } finally {
@@ -36,11 +35,10 @@ const Login = () => {
   }
 
   const onGoogleSignIn = (e) => {
-    console.log('STARTED')
     e.preventDefault()
     if (!isSigningIn) {
       setIsSigningIn(true)
-      let res = doSignInWithGoogle()
+      doSignInWithGoogle()
         .then((res) => {
           console.log('RES', res)
         })
@@ -48,9 +46,7 @@ const Login = () => {
           setIsSigningIn(false)
           console.error(err)
         })
-      console.log(res)
     }
-    console.log('FINISHED')
   }
 
   return (

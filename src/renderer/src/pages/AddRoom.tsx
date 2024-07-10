@@ -61,7 +61,6 @@ const AddRoomForm = () => {
       })
   }
   const handleAddRoom = () => {
-    console.log(currentUser)
     const roomsRef = ref(db, 'rooms')
     const newRoomRef = push(roomsRef)
 
@@ -82,7 +81,6 @@ const AddRoomForm = () => {
         console.log('Room added successfully')
         setRoomName('')
         let url = `/rooms/${newRoomRef.key}`
-        console.log(url)
         navigate(url)
       })
       .catch((error) => {
