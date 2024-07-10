@@ -4,9 +4,9 @@ import { ref, update } from 'firebase/database'
 import { db } from '@renderer/firebase/firebase'
 import { useAuth } from '@renderer/contexts/authContext'
 
-export default function Voting({ room }) {
+export default function Voting() {
   const { roomId } = useParams()
-  const { currentUser } = useAuth()
+  const { currentUser }: any = useAuth()
   const fibonacciSequence = ['1', '2', '3', '5', '8', '13', '21', '34', '55', '☕']
   function updateUserVote(newVote) {
     const userRef = ref(db, `rooms/${roomId}/users/${currentUser?.id || currentUser?.uid}`)

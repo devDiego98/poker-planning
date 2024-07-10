@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getDatabase } from 'firebase/database'
-import { getFirestore } from 'firebase/firestore'
 const firebaseConfig = {
   apiKey: 'AIzaSyBqG9n3kUXQwPB4BF6zSfA9pvVtI4NOf4U',
   authDomain: 'poker-planning-project.firebaseapp.com',

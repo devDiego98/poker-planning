@@ -4,7 +4,7 @@ import { useCallback, useContext, useState } from 'react'
 
 export default function PPEmojiPicker() {
   const [index, setIndex] = useState(1) // Initialize index state with 1 (or any default index)
-  const { emojiOne, emojiTwo, emojiThree, setEmojiOne, setEmojiTwo, setEmojiThree } =
+  const { emojiOne, emojiTwo, emojiThree, setEmojiOne, setEmojiTwo, setEmojiThree }: any =
     useContext(AppContext)
 
   const handleEmojiClick = useCallback(

@@ -2,7 +2,6 @@ import RevealCardsSection from '@renderer/components/RevealCardsSection'
 import Voting from '@renderer/components/Voting'
 import { useAuth } from '@renderer/contexts/authContext'
 import { db } from '@renderer/firebase/firebase'
-import EmojiPicker from 'emoji-picker-react'
 import { off, onValue, ref } from 'firebase/database'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -10,7 +9,7 @@ import Modal from 'react-modal'
 import PPEmojiPicker from '@renderer/components/EmojiPicker'
 export default function Planning() {
   const { roomId } = useParams()
-  const { currentUser } = useAuth()
+  const { currentUser }: any = useAuth()
   const [room, setRoom] = useState()
   const [modalIsOpen, setIsOpen] = useState(false)
   function openModal() {
@@ -39,6 +38,7 @@ export default function Planning() {
       )
       return () => off(roomRef, 'value', unsubscribe)
     }
+    return
   }, [currentUser])
   return (
     <>
@@ -46,7 +46,7 @@ export default function Planning() {
         <button onClick={openModal}>Pick Emojis</button>
       </header>
       <RevealCardsSection key={room} room={room} />
-      <Voting room={room} />
+      <Voting />
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Example Modal">
         <PPEmojiPicker />{' '}
       </Modal>

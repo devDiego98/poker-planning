@@ -1,16 +1,16 @@
 import Login from './pages/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Dashboard from './pages/AddRoom'
 import Register from './pages/Register'
 import { AuthProvider } from './contexts/authContext'
-import { getDatabase, ref, set, onValue, get, child } from 'firebase/database'
-import { useEffect, useState } from 'react'
+import { ref, get, child } from 'firebase/database'
+import { useEffect } from 'react'
 import { db } from './firebase/firebase'
 import AddRoomForm from './pages/AddRoom'
 import Planning from './pages/Planning'
 import { AppProvider } from './contexts/authContext/appContext'
+import { Bounce, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 function App(): JSX.Element {
-  const [data, setData] = useState(null)
   // const styles = {
   //   layout: {
   //     display: 'flex',
@@ -41,25 +41,28 @@ function App(): JSX.Element {
   }, [])
 
   return (
-    <AppProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/rooms/:roomId" element={<Planning />} />
-            <Route path="/add-room" element={<AddRoomForm />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Login />} />
-          </Routes>
-          {/* <div style={styles.layout}>
+    <>
+      <AppProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/rooms/:roomId" element={<Planning />} />
+              <Route path="/add-room" element={<AddRoomForm />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<Login />} />
+            </Routes>
+            {/* <div style={styles.layout}>
         <div style={styles.header}>
         asdasd
         </div>
         
         
         </div> */}
-        </BrowserRouter>
-      </AuthProvider>
-    </AppProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </AppProvider>
+      <ToastContainer />
+    </>
   )
 }
 

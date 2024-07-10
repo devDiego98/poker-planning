@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from 'react'
 import Card from './Card'
-import { get, off, onChildChanged, onValue, push, ref, set, update } from 'firebase/database'
+import { get, off, onChildChanged, onValue, ref, set, update } from 'firebase/database'
 import { db } from '@renderer/firebase/firebase'
 import { useParams } from 'react-router-dom'
 import { useBallThrow } from '@renderer/hooks/useBallThrow'
 import { AppContext } from '@renderer/contexts/authContext/appContext'
 
 export default function RevealCardsSection({ room }) {
-  const { emojiOne, emojiTwo, emojiThree } = useContext(AppContext)
+  const { emojiOne, emojiTwo, emojiThree }: any = useContext(AppContext)
 
   const { balls, throwBallAtElement } = useBallThrow(200)
   const [cardsFlipped, setCardsFlipped] = useState(false)
@@ -15,12 +15,16 @@ export default function RevealCardsSection({ room }) {
   const [layout, setLayout] = useState({
     top: [
       {
-        name: ''
+        name: '',
+        id: undefined,
+        vote: 0
       }
     ],
     bottom: [
       {
-        name: ''
+        name: '',
+        id: undefined,
+        vote: 0
       }
     ]
   })
@@ -177,7 +181,7 @@ export default function RevealCardsSection({ room }) {
               <div id={user.id} key={user.id}>
                 <div style={{ display: 'flex' }}>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id, emojiOne)}
+                    onClick={() => storeEmojiToThrow(user?.id || '', emojiOne)}
                     style={{
                       width: 50,
                       height: 50,
@@ -191,7 +195,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiOne}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id, emojiTwo)}
+                    onClick={() => storeEmojiToThrow(user.id || '', emojiTwo)}
                     style={{
                       width: 50,
                       height: 50,
@@ -205,7 +209,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiTwo}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id, emojiThree)}
+                    onClick={() => storeEmojiToThrow(user.id || '', emojiThree)}
                     style={{
                       width: 50,
                       height: 50,
@@ -263,7 +267,7 @@ export default function RevealCardsSection({ room }) {
                   }}
                 >
                   <div
-                    onClick={() => storeEmojiToThrow(user.id, emojiOne)}
+                    onClick={() => storeEmojiToThrow(user?.id || '', emojiOne)}
                     style={{
                       width: 50,
                       height: 50,
@@ -277,7 +281,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiOne}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id, emojiTwo)}
+                    onClick={() => storeEmojiToThrow(user.id || '', emojiTwo)}
                     style={{
                       width: 50,
                       height: 50,
@@ -291,7 +295,7 @@ export default function RevealCardsSection({ room }) {
                     {emojiTwo}
                   </div>
                   <div
-                    onClick={() => storeEmojiToThrow(user.id, emojiThree)}
+                    onClick={() => storeEmojiToThrow(user.id || '', emojiThree)}
                     style={{
                       width: 50,
                       height: 50,
