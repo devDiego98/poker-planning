@@ -20,41 +20,45 @@ const AddRoomForm = () => {
     const roomRef = ref(db, `rooms/${roomId}`)
 
     // First, check if the room exists
-    get(roomRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const roomData = snapshot.val()
-        const usersRef = ref(db, `rooms/${roomId}/users`)
+    get(roomRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const roomData = snapshot.val()
+          const usersRef = ref(db, `rooms/${roomId}/users`)
 
-        // Check if the user already exists in the room
-        if (!roomData.users || !roomData.users[currentUser.id]) {
-          // User doesn't exist, so add them
-          const userObject = {
-            [currentUser.id]: {
-              ...currentUser,
-              vote: 0
+          // Check if the user already exists in the room
+          if (!roomData.users || !roomData.users[currentUser.id]) {
+            // User doesn't exist, so add them
+            const userObject = {
+              [currentUser.id]: {
+                ...currentUser,
+                vote: 0
+              }
             }
-          }
 
-          set(usersRef, {
-            ...roomData.users,
-            ...userObject
-          }).then(() => {
-            console.log('User added to room successfully')
+            set(usersRef, {
+              ...roomData.users,
+              ...userObject
+            })
+              .then(() => {
+                console.log('User added to room successfully')
+                navigate(`/rooms/${roomId}`)
+              })
+              .catch((error) => {
+                console.error('Error adding user to room: ', error)
+              })
+          } else {
+            console.log('User already exists in the room')
             navigate(`/rooms/${roomId}`)
-          }).catch((error) => {
-            console.error('Error adding user to room: ', error)
-          })
+          }
         } else {
-          console.log('User already exists in the room')
-          navigate(`/rooms/${roomId}`)
+          console.log('Room does not exist')
+          // You might want to show an error message to the user here
         }
-      } else {
-        console.log('Room does not exist')
-        // You might want to show an error message to the user here
-      }
-    }).catch((error) => {
-      console.error('Error checking room existence: ', error)
-    })
+      })
+      .catch((error) => {
+        console.error('Error checking room existence: ', error)
+      })
   }
   const handleAddRoom = () => {
     console.log(currentUser)
@@ -79,6 +83,7 @@ const AddRoomForm = () => {
         console.log('Room added successfully')
         setRoomName('')
         let url = `/rooms/${newRoomRef.key}`
+        console.log(url)
         navigate(url)
       })
       .catch((error) => {
@@ -109,12 +114,7 @@ const AddRoomForm = () => {
       <form onSubmit={(e) => e.preventDefault()}>
         <label>
           Room id:
-          <input
-            type="text"
-            className="text-black"
-            value={roomId}
-            onChange={handleRoomIdChange}
-          />
+          <input type="text" className="text-black" value={roomId} onChange={handleRoomIdChange} />
         </label>
         <br />
 

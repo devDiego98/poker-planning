@@ -18,7 +18,6 @@ export default function Planning() {
         roomRef,
         (snapshot) => {
           if (snapshot.exists()) {
-            console.log(snapshot.val())
             setRoom(snapshot.val())
           } else {
             console.log('No user data available')
