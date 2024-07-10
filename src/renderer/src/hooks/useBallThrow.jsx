@@ -27,9 +27,8 @@ export function useBallThrow(floorOffset = 400) {
   }, [])
 
   const throwBallAtElement = useCallback(
-    (event) => {
-      const rect = event.target.getBoundingClientRect()
-
+    (rect) => {
+      console.log(rect)
       const side = Math.random() < 0.5 ? 'left' : 'right'
       const targetX = rect.left + rect.width / 2 + (side === 'left' ? -35 : 35)
       const targetY = rect.top + rect.height / 2
@@ -66,7 +65,7 @@ export function useBallThrow(floorOffset = 400) {
 
               if (progress >= 1) {
                 ball.hasHitTarget = true
-                ball.vel.x = (ball.side === 'left' ? -1 : 1) * 2
+                ball.vel.x = ball.side === 'left' ? -1 : 1
                 ball.vel.y = -2
               }
             } else {

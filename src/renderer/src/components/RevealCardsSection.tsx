@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Card from './Card'
-import { off, onValue, ref, update } from 'firebase/database'
+import { get, off, onChildChanged, onValue, push, ref, set, update } from 'firebase/database'
 import { db } from '@renderer/firebase/firebase'
 import { useParams } from 'react-router-dom'
 import { useBallThrow } from '@renderer/hooks/useBallThrow'
@@ -24,7 +24,6 @@ export default function RevealCardsSection({ room }) {
 
   const handleUsersLayout = (users) => {
     // Calculate the midpoint
-    console.log('USERS', users)
     const midpoint = Math.ceil(users.length / 2)
 
     // Split the array into two halves
@@ -38,7 +37,6 @@ export default function RevealCardsSection({ room }) {
     })
   }
   useEffect(() => {
-    console.log('RUNNING AGAIN', room)
     handleUsersLayout(room?.users || [])
   }, [room])
   useEffect(() => {
@@ -54,11 +52,36 @@ export default function RevealCardsSection({ room }) {
   }
   const hideCards = () => {
     const userRef = ref(db, `rooms/${roomId}`)
-    update(userRef, {
-      revealCards: false
-    }).catch((error) => {
+    update(userRef, {}).catch((error) => {
       console.error('Error updating card reveal: ', error)
     })
+  }
+  const storeEmojiToThrow = async (userId: string, newEmoji: string) => {
+    const userEmojisRef = ref(db, `rooms/${roomId}/users/${userId}/emojis`)
+    try {
+      // Get current emojis array
+      const snapshot = await get(userEmojisRef)
+      let currentEmojis = snapshot.val() || []
+      if (!Array.isArray(currentEmojis)) {
+        console.log('entered')
+        currentEmojis = Object.values(currentEmojis)
+          .map((item) => (item as any).code)
+          .filter(Boolean)
+      }
+      if (newEmoji) {
+        currentEmojis.push(newEmoji)
+      }
+
+      // Filter out any undefined or null values
+      const validEmojis = currentEmojis.filter(Boolean)
+
+      // Set the updated array back to Firebase
+      await set(userEmojisRef, validEmojis)
+
+      console.log('Emoji stored successfully')
+    } catch (error) {
+      console.error('Error storing emoji:', error)
+    }
   }
   useEffect(() => {
     const roomRef = ref(db, `rooms/${roomId}/revealCards`)
@@ -76,10 +99,62 @@ export default function RevealCardsSection({ room }) {
         console.error('Error fetching user data:', error)
       }
     )
-
     // Cleanup function to unsubscribe when component unmounts
     return () => off(roomRef, 'value', unsubscribe)
   }, [])
+  const watchUserEmojis = () => {
+    const usersRef = ref(db, `rooms/${roomId}/users`)
+
+    const handleEmojiChange = (snapshot: any) => {
+      const userData = snapshot.val()
+      if (userData && userData.emojis) {
+        const userId = snapshot.key
+        const emojisArray = Object.values(userData.emojis) as []
+
+        // Call your function here with the updated emojis array
+        handleUpdatedEmojis(userId, emojisArray)
+      }
+    }
+
+    // Set up the listener
+    onChildChanged(usersRef, handleEmojiChange)
+
+    // Return a function to remove the listener when no longer needed
+    return () => off(usersRef, 'child_changed', handleEmojiChange)
+  }
+  useEffect(() => {
+    const unsubscribe = watchUserEmojis()
+    return () => unsubscribe() // Clean up on unmount
+  }, [])
+  // The function to handle updated emojis
+  const handleUpdatedEmojis = (userId: string, emojis: string[]) => {
+    console.log(`User ${userId} emojis updated:`, emojis)
+    const rect = document.getElementById(userId)?.getBoundingClientRect()
+    console.log(userId)
+    console.log(document.getElementById(userId))
+    throwBallAtElement(rect)
+    // Add your logic here to handle the updated emojis
+  }
+  useEffect(() => {
+    const roomRef = ref(db, `rooms/${roomId}/revealCards`)
+
+    const unsubscribe = onValue(
+      roomRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setCardsFlipped(snapshot.val())
+        } else {
+          console.log('No user data available')
+        }
+      },
+      (error) => {
+        console.error('Error fetching user data:', error)
+      }
+    )
+    // Cleanup function to unsubscribe when component unmounts
+    return () => off(roomRef, 'value', unsubscribe)
+  }, [])
+
   return (
     <div className="flex flex-1 m-auto items-center">
       <div>
@@ -103,7 +178,7 @@ export default function RevealCardsSection({ room }) {
         <div className="top" style={styles.top}>
           {!!layout.top.length &&
             layout.top.map((user) => (
-              <button onClick={throwBallAtElement}>
+              <button id={user.id} onClick={() => storeEmojiToThrow(user.id, '☕')}>
                 <Card user={user} flipped={cardsFlipped} flippable>
                   {user?.vote || ''}
                 </Card>
@@ -137,7 +212,7 @@ export default function RevealCardsSection({ room }) {
         </div>
         <div className="bottom" style={styles.bottom}>
           {layout.bottom.map((user) => (
-            <button onClick={throwBallAtElement}>
+            <button id={user.id} onClick={() => storeEmojiToThrow(user.id, '☕')}>
               <Card user={user} nameAlign="bottom" flipped={cardsFlipped} flippable>
                 {user.vote}
               </Card>
