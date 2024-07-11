@@ -5,10 +5,11 @@ import { db } from '@renderer/firebase/firebase'
 import { useParams } from 'react-router-dom'
 import { useBallThrow } from '@renderer/hooks/useBallThrow'
 import { AppContext } from '@renderer/contexts/authContext/appContext'
+import { useAuth } from '@renderer/contexts/authContext'
 
 export default function RevealCardsSection({ room }) {
   const { emojiOne, emojiTwo, emojiThree }: any = useContext(AppContext)
-
+  const { currentUser }: any = useAuth()
   const { balls, throwBallAtElement } = useBallThrow(200)
   const [cardsFlipped, setCardsFlipped] = useState(false)
   const { roomId } = useParams()
@@ -147,7 +148,9 @@ export default function RevealCardsSection({ room }) {
     // Cleanup function to unsubscribe when component unmounts
     return () => off(roomRef, 'value', unsubscribe)
   }, [])
-
+  useEffect(() => {
+    console.log(currentUser)
+  }, [currentUser])
   return (
     <div className="flex flex-1 m-auto items-center">
       <div>
@@ -175,50 +178,52 @@ export default function RevealCardsSection({ room }) {
           {!!layout.top.length &&
             layout.top.map((user) => (
               <div id={user.uid} key={user.uid}>
-                <div style={{ display: 'flex' }}>
-                  <div
-                    onClick={() => storeEmojiToThrow(user?.uid || '', emojiOne)}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      border: `1px solid black`,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: '50%'
-                    }}
-                  >
-                    {emojiOne}
+                {user.uid !== currentUser.uid && (
+                  <div style={{ display: 'flex' }}>
+                    <div
+                      onClick={() => storeEmojiToThrow(user?.uid || '', emojiOne)}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        border: `1px solid black`,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: '50%'
+                      }}
+                    >
+                      {emojiOne}
+                    </div>
+                    <div
+                      onClick={() => storeEmojiToThrow(user.uid || '', emojiTwo)}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        border: `1px solid black`,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: '50%'
+                      }}
+                    >
+                      {emojiTwo}
+                    </div>
+                    <div
+                      onClick={() => storeEmojiToThrow(user.uid || '', emojiThree)}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        border: `1px solid black`,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: '50%'
+                      }}
+                    >
+                      {emojiThree}
+                    </div>
                   </div>
-                  <div
-                    onClick={() => storeEmojiToThrow(user.uid || '', emojiTwo)}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      border: `1px solid black`,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: '50%'
-                    }}
-                  >
-                    {emojiTwo}
-                  </div>
-                  <div
-                    onClick={() => storeEmojiToThrow(user.uid || '', emojiThree)}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      border: `1px solid black`,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: '50%'
-                    }}
-                  >
-                    {emojiThree}
-                  </div>
-                </div>
+                )}
                 <Card user={user} flipped={cardsFlipped} flippable>
                   {user?.vote || ''}
                 </Card>
@@ -259,7 +264,8 @@ export default function RevealCardsSection({ room }) {
                   style={{
                     display: 'flex',
                     gap: '8px',
-                    paddingBottom: '16px'
+                    paddingBottom: '16px',
+                    visibility: user.uid == currentUser.uid ? 'hidden' : 'inherit'
                   }}
                 >
                   <div

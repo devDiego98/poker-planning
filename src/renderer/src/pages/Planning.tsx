@@ -71,8 +71,9 @@ export default function Planning() {
           if (!roomData.users || !roomData.users[currentUser.id]) {
             // User doesn't exist, so add them
             const userObject = {
-              [currentUser.id]: {
-                ...currentUser,
+              [currentUser.uid]: {
+                email: currentUser.email,
+                uid: currentUser.uid,
                 vote: 0
               }
             }

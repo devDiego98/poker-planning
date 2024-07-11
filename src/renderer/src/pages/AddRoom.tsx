@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { db } from '@renderer/firebase/firebase'
-import { ref, push, set } from 'firebase/database'
+import { ref, push, set, get } from 'firebase/database'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@renderer/contexts/authContext'
 
@@ -17,7 +17,45 @@ const AddRoomForm = () => {
   }
 
   const goToRoom = () => {
-    navigate(`/rooms/${roomId}`)
+    const roomRef = ref(db, `rooms/${roomId}`)
+
+    // First, check if the room exists
+    get(roomRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const roomData = snapshot.val()
+          const roomUsersRef = ref(db, `rooms/${roomId}/users`)
+
+          // Check if the user already exists in the room
+          if (!roomData.users || !roomData.users[currentUser.id]) {
+            // User doesn't exist, so add them
+            const userObject = {
+              [currentUser.uid]: {
+                email: currentUser.email,
+                uid: currentUser.uid,
+                vote: 0
+              }
+            }
+
+            set(roomUsersRef, {
+              ...roomData.users,
+              ...userObject
+            }).catch((error) => {
+              console.error('Error adding user to room: ', error)
+              return
+            })
+          } else {
+            console.log('User already exists in the room')
+          }
+        } else {
+          console.log('Room does not exist')
+          return
+        }
+        navigate(`/rooms/${roomId}`)
+      })
+      .catch((error) => {
+        console.error('Error checking room existence: ', error)
+      })
   }
   const handleAddRoom = useCallback(() => {
     const roomsRef = ref(db, 'rooms')
