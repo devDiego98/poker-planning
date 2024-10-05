@@ -3,6 +3,7 @@ import { db } from '@renderer/firebase/firebase'
 import { ref, push, set, get } from 'firebase/database'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@renderer/contexts/authContext'
+import { findRoomByName } from '@renderer/utils'
 
 const AddRoomForm = () => {
   const navigate = useNavigate()
@@ -16,51 +17,77 @@ const AddRoomForm = () => {
     setRoomId(event.target.value)
   }
 
-  const goToRoom = () => {
-    const roomRef = ref(db, `rooms/${roomId}`)
+  const goToRoomByName = () => {
+    const roomsRef = ref(db, 'rooms');
 
-    // First, check if the room exists
-    get(roomRef)
+    // First, find the room by name
+    get(roomsRef)
       .then((snapshot) => {
         if (snapshot.exists()) {
-          const roomData = snapshot.val()
-          const roomUsersRef = ref(db, `rooms/${roomId}/users`)
+          const rooms = snapshot.val();
+          let foundRoomId = null;
+          let roomData = null;
 
-          // Check if the user already exists in the room
-          if (!roomData.users || !roomData.users[currentUser.id]) {
-            // User doesn't exist, so add them
-            const userObject = {
-              [currentUser.uid]: {
-                email: currentUser.email,
-                uid: currentUser.uid,
-                vote: 0
-              }
+          // Search for the room by name
+          for (const [id, room] of Object.entries(rooms)) {
+            if (room.name.toLowerCase() === roomId.toLowerCase()) {
+              foundRoomId = id;
+              roomData = room;
+              break;
             }
+          }
 
-            set(roomUsersRef, {
-              ...roomData.users,
-              ...userObject
-            }).catch((error) => {
-              console.error('Error adding user to room: ', error)
-              return
-            })
+          if (foundRoomId) {
+            const roomUsersRef = ref(db, `rooms/${foundRoomId}/users`);
+
+            // Check if the user already exists in the room
+            if (!roomData.users || !roomData.users[currentUser.uid]) {
+              // User doesn't exist, so add them
+              const userObject = {
+                [currentUser.uid]: {
+                  email: currentUser.email,
+                  uid: currentUser.uid,
+                  vote: 0
+                }
+              };
+
+              set(roomUsersRef, {
+                ...roomData.users,
+                ...userObject
+              }).then(() => {
+                console.log('User added to room successfully');
+                navigate(`/rooms/${foundRoomId}`);
+              }).catch((error) => {
+                console.error('Error adding user to room: ', error);
+              });
+            } else {
+              console.log('User already exists in the room');
+              navigate(`/rooms/${foundRoomId}`);
+            }
           } else {
-            console.log('User already exists in the room')
+            console.log('Room not found');
+            // Optionally, create a new room here if desired
           }
         } else {
-          console.log('Room does not exist')
-          return
+          console.log('No rooms exist');
         }
-        navigate(`/rooms/${roomId}`)
       })
       .catch((error) => {
-        console.error('Error checking room existence: ', error)
-      })
-  }
-  const handleAddRoom = useCallback(() => {
+        console.error('Error checking rooms: ', error);
+      });
+  };
+
+  const handleAddRoom = useCallback(async () => {
     const roomsRef = ref(db, 'rooms')
+    const snapshot = await get(roomsRef);
+
+    if (snapshot.exists()) {
+      const rooms = snapshot.val();
+      const roomExists = findRoomByName(rooms, roomName)
+      if (roomExists) return null
+
+    }
     const newRoomRef = push(roomsRef)
-    console.log(currentUser)
     // Create an object with the user's ID as the key
     const userObject = {
       [currentUser.uid]: {
@@ -69,7 +96,6 @@ const AddRoomForm = () => {
         vote: 0
       }
     }
-    console.log(userObject)
     set(newRoomRef, {
       name: roomName,
       users: userObject,
@@ -84,7 +110,7 @@ const AddRoomForm = () => {
       .catch((error) => {
         console.error('Error adding room: ', error)
       })
-  }, [currentUser])
+  }, [currentUser, roomName])
   return (
     <div>
       <div>
@@ -119,7 +145,7 @@ const AddRoomForm = () => {
             onChange={handleRoomIdChange}
           />
 
-          <button type="button" className="text-white" onClick={goToRoom}>
+          <button type="button" className="text-white" onClick={goToRoomByName}>
             Enter
           </button>
         </form>

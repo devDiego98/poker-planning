@@ -10,6 +10,7 @@ export default function Voting() {
   const fibonacciSequence = ['1', '2', '3', '5', '8', '13', '21', '34', '55', '☕']
   function updateUserVote(newVote) {
     const userRef = ref(db, `rooms/${roomId}/users/${currentUser?.uid}`)
+    console.log('first', userRef)
     update(userRef, {
       vote: newVote
     })
