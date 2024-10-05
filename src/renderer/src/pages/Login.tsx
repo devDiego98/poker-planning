@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
@@ -6,26 +6,24 @@ import { useAuth } from '@renderer/contexts/authContext'
 
 const Login = () => {
   const navigate = useNavigate()
-  const { setCurrentUser }: any = useAuth()
+  const { currentUser }: any = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSigningIn, setIsSigningIn] = useState(false)
   const [errorMessage] = useState('')
-
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/add-room')
+    }
+  }, [currentUser])
   const onSubmit = async (e) => {
     e.preventDefault()
     if (!isSigningIn) {
       setIsSigningIn(true)
       try {
-        let res = await doSignInWithEmailAndPassword(email, password)
-        setCurrentUser({
-          email: res.user.email,
-          id: res.user.uid,
-          name: res.user.displayName
-        })
+        await doSignInWithEmailAndPassword(email, password)
         navigate('/add-room')
-        console.log(res)
       } catch (err) {
         console.error(err)
       } finally {
@@ -36,11 +34,10 @@ const Login = () => {
   }
 
   const onGoogleSignIn = (e) => {
-    console.log('STARTED')
     e.preventDefault()
     if (!isSigningIn) {
       setIsSigningIn(true)
-      let res = doSignInWithGoogle()
+      doSignInWithGoogle()
         .then((res) => {
           console.log('RES', res)
         })
@@ -48,9 +45,7 @@ const Login = () => {
           setIsSigningIn(false)
           console.error(err)
         })
-      console.log(res)
     }
-    console.log('FINISHED')
   }
 
   return (

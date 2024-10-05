@@ -8,7 +8,7 @@ import { db } from './firebase/firebase'
 import AddRoomForm from './pages/AddRoom'
 import Planning from './pages/Planning'
 import { AppProvider } from './contexts/authContext/appContext'
-import { Bounce, ToastContainer } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 function App(): JSX.Element {
   // const styles = {
@@ -27,17 +27,9 @@ function App(): JSX.Element {
 
   useEffect(() => {
     const dbRef = ref(db)
-    get(child(dbRef, `/rooms`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          console.log(snapshot.val())
-        } else {
-          console.log('No data available')
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    get(child(dbRef, `/rooms`)).catch((error) => {
+      console.error(error)
+    })
   }, [])
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { db } from '@renderer/firebase/firebase'
 import { ref, push, set, get } from 'firebase/database'
 import { useNavigate } from 'react-router-dom'
@@ -24,55 +24,52 @@ const AddRoomForm = () => {
       .then((snapshot) => {
         if (snapshot.exists()) {
           const roomData = snapshot.val()
-          const usersRef = ref(db, `rooms/${roomId}/users`)
+          const roomUsersRef = ref(db, `rooms/${roomId}/users`)
 
           // Check if the user already exists in the room
           if (!roomData.users || !roomData.users[currentUser.id]) {
             // User doesn't exist, so add them
             const userObject = {
-              [currentUser.id]: {
-                ...currentUser,
+              [currentUser.uid]: {
+                email: currentUser.email,
+                uid: currentUser.uid,
                 vote: 0
               }
             }
 
-            set(usersRef, {
+            set(roomUsersRef, {
               ...roomData.users,
               ...userObject
+            }).catch((error) => {
+              console.error('Error adding user to room: ', error)
+              return
             })
-              .then(() => {
-                console.log('User added to room successfully')
-                navigate(`/rooms/${roomId}`)
-              })
-              .catch((error) => {
-                console.error('Error adding user to room: ', error)
-              })
           } else {
             console.log('User already exists in the room')
-            navigate(`/rooms/${roomId}`)
           }
         } else {
           console.log('Room does not exist')
-          // You might want to show an error message to the user here
+          return
         }
+        navigate(`/rooms/${roomId}`)
       })
       .catch((error) => {
         console.error('Error checking room existence: ', error)
       })
   }
-  const handleAddRoom = () => {
-    console.log(currentUser)
+  const handleAddRoom = useCallback(() => {
     const roomsRef = ref(db, 'rooms')
     const newRoomRef = push(roomsRef)
-
+    console.log(currentUser)
     // Create an object with the user's ID as the key
     const userObject = {
-      [currentUser.id]: {
-        ...currentUser,
+      [currentUser.uid]: {
+        email: currentUser.email,
+        uid: currentUser.uid,
         vote: 0
       }
     }
-
+    console.log(userObject)
     set(newRoomRef, {
       name: roomName,
       users: userObject,
@@ -82,13 +79,12 @@ const AddRoomForm = () => {
         console.log('Room added successfully')
         setRoomName('')
         let url = `/rooms/${newRoomRef.key}`
-        console.log(url)
         navigate(url)
       })
       .catch((error) => {
         console.error('Error adding room: ', error)
       })
-  }
+  }, [currentUser])
   return (
     <div>
       <div>
@@ -107,7 +103,7 @@ const AddRoomForm = () => {
           </div>
 
           <button type="button" className="text-white" onClick={handleAddRoom}>
-            Add Room
+            Add Rooms
           </button>
         </form>
       </div>
