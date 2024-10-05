@@ -25,12 +25,12 @@ const AddRoomForm = () => {
       .then((snapshot) => {
         if (snapshot.exists()) {
           const rooms = snapshot.val();
-          let foundRoomId = null;
-          let roomData = null;
+          let foundRoomId: string = undefined!;
+          let roomData;
 
           // Search for the room by name
           for (const [id, room] of Object.entries(rooms)) {
-            if (room.name.toLowerCase() === roomId.toLowerCase()) {
+            if ((room as any).name.toLowerCase() === roomId.toLowerCase()) {
               foundRoomId = id;
               roomData = room;
               break;
@@ -110,6 +110,7 @@ const AddRoomForm = () => {
       .catch((error) => {
         console.error('Error adding room: ', error)
       })
+    return
   }, [currentUser, roomName])
   return (
     <div>
@@ -137,7 +138,7 @@ const AddRoomForm = () => {
         <h4>Already have a room?</h4>
         <form onSubmit={(e) => e.preventDefault()} className="flex gap-4">
           <input
-            placeholder="room id"
+            placeholder="room name"
             type="text"
             className="text-black pl-2 max-w-[10px]"
             style={{ maxWidth: '150px' }}
